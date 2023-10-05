@@ -274,6 +274,6 @@ jobs:
 
           😋(${{env.WAREHOUSE_MAN}}仓库的#${{env.RUN_NUMBER}}号
           
-          🎈 触发时间：${{$(date "+%Y年%m月%d日-%H点%M分")}}
+          🎈 触发时间：${(date "+%Y年%m月%d日-%H点%M分")}
           
           🌴 固件已经编译完成 🎈！！！
