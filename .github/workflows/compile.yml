@@ -238,10 +238,10 @@ jobs:
         SCKEY: ${{ secrets.WEIXIN_SCKEY }}
         key: ${{ secrets.WEIXIN_SCKEY }}
         text: 开始编译【${{matrix.target}}】
-        desp: 🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${REPO_BRANCH}分支的${{env.TARGET_PROFILE}}】固件中,请耐心等待......
+        desp: 🎉 主人💕：您的脚本编译成功【${{matrix.target}}】文件夹编译【${REPO_BRANCH}分支的${{env.TARGET_PROFILE}}】固件中,请耐心等待......
 
           😋(${{env.WAREHOUSE_MAN}}仓库的#${{env.RUN_NUMBER}}号
           
-          🎈 触发时间：${{$(date "+%Y年%m月%d日-%H点%M分")}}
+          🎈 触发时间：${(date "+%Y年%m月%d日-%H点%M分")}
           
           🌴 固件已经编译完成 🎈！！！
