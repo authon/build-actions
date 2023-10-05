@@ -232,16 +232,16 @@ jobs:
           fi
         fi
      
-    - name: 完成编译微信通知
+    - name: 触发编译通知
       uses: emon100/Action-Serverchan@v3
       with:
         SCKEY: ${{ secrets.WEIXIN_SCKEY }}
         key: ${{ secrets.WEIXIN_SCKEY }}
-        text: 编译成功恭喜${{matrix.target}}固件编译成功！
-        desp: 我亲爱的✨主人✨：您使用【${{matrix.target}}】文件夹编译【${REPO_BRANCH}分支的${{env.TARGET_PROFILE}}】固件顺利编译完成了✌️💯💐
+        text: 开始编译【${{matrix.target}}】
+        desp: 🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${REPO_BRANCH}分支的${{env.TARGET_PROFILE}}】固件中,请耐心等待......
 
-          🛠 编译版本：${{env.WAREHOUSE_MAN}}仓库的#${{env.RUN_NUMBER}}号
+          😋(${{env.WAREHOUSE_MAN}}仓库的#${{env.RUN_NUMBER}}号
           
-          🎈 编译时间：date +%Y年%m月%d号%H时%M分
+          🎈 触发时间：${{$(date "+%Y年%m月%d日-%H点%M分")}}
           
           🌴 固件已经编译完成 🎈！！！
