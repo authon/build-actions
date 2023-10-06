@@ -67,7 +67,7 @@ CONFIG_PACKAGE_libyaml=y
 CONFIG_PACKAGE_luci-app-argon-config=y
 # CONFIG_PACKAGE_luci-app-arpbind is not set
 # CONFIG_PACKAGE_luci-app-autoreboot is not set
-# CONFIG_PACKAGE_luci-app-ddns is not set
+CONFIG_PACKAGE_luci-app-ddns=y
 # CONFIG_PACKAGE_luci-app-diskman is not set
 CONFIG_PACKAGE_luci-app-fileassistant=y
 # CONFIG_PACKAGE_luci-app-ipsec-vpnd is not set
@@ -120,6 +120,12 @@ CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
 # CONFIG_PACKAGE_luci-app-wireguard is not set
 # CONFIG_PACKAGE_luci-app-xlnetacc is not set
 # CONFIG_PACKAGE_luci-app-zerotier is not set
+CONFIG_PACKAGE_luci-app-ramfree=y
+CONFIG_PACKAGE_luci-app-webadmin=y
+CONFIG_PACKAGE_luci-app-wolplus=y
+CONFIG_PACKAGE_luci-app-eqos=y
+CONFIG_PACKAGE_luci-app-nlbwmon=y
+
 CONFIG_PACKAGE_luci-compat=y
 CONFIG_PACKAGE_luci-i18n-argon-config-zh-cn=y
 CONFIG_PACKAGE_luci-i18n-passwall-zh-cn=y
