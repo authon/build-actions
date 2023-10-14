@@ -113,7 +113,6 @@ CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_NaiveProxy=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Redsocks2=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_V2ray_Plugin=y
-CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_TUIC-Client=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
 # CONFIG_PACKAGE_luci-app-turboacc is not set
 # CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA is not set
@@ -163,7 +162,8 @@ CONFIG_PACKAGE_ruby-strscan=y
 CONFIG_PACKAGE_ruby-yaml=y
 # CONFIG_PACKAGE_samba4-libs is not set
 # CONFIG_PACKAGE_samba4-server is not set
-CONFIG_PACKAGE_shadowsocks-rust-sslocal=y
+CONFIG_PACKAGE_shadowsocks-libev-ss-local=y
+CONFIG_PACKAGE_shadowsocks-libev-ss-redir=y
 CONFIG_PACKAGE_shadowsocks-rust-ssserver=y
 CONFIG_PACKAGE_sing-box=y
 # CONFIG_PACKAGE_smartmontools is not set
