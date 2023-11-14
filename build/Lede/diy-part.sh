@@ -7,6 +7,7 @@
 # 下载额外插件
 # src-git helloworld https://github.com/fw876/helloworld.git;main
 git clone -b main https://github.com/fw876/helloworld helloword
+./scripts/feeds update -a && ./scripts/feeds install -a
 
 # 后台IP设置
 export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
