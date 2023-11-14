@@ -5,7 +5,8 @@
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
 # 下载额外插件
-src-git helloworld https://github.com/fw876/helloworld.git;main
+# src-git helloworld https://github.com/fw876/helloworld.git;main
+git clone -b main https://github.com/fw876/helloworld
 
 # 后台IP设置
 export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
