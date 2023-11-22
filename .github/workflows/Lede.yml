@@ -41,7 +41,7 @@ on:
       CPU_SELECTION:
         description: 'CPU优选,增加编译速度'
         required: true
-        default: '8370C'
+        default: '默认'
         type: choice
         options:
           - '默认'
