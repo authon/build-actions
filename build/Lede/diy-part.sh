@@ -6,8 +6,13 @@
 
 # 下载额外插件
 # src-git helloworld https://github.com/fw876/helloworld.git;main
-# git clone -b main https://github.com/fw876/helloworld helloword2
-git clone https://github.com/kenzok8/small.git small
+# git clone https://github.com/kenzok8/small.git small
+rm -rf package/helloworld
+git clone https://github.com/fw876/helloworld.git -b main package/helloworld
+rm -rf package/passwall
+git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/passwall
+rm -rf package/passwall2
+git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
 
 # 后台IP设置
 export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
