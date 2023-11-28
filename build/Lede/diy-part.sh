@@ -14,8 +14,7 @@ git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/pass
 rm -rf package/passwall2
 git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
 rm -rf feeds/packages/lang/golang/golang
-git clone https://github.com/openwrt/packages/openwrt-22.03/lang/golang/golang.git -b openwrt-22.03 feeds/packages/lang/golang/golang
-# svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
+svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang/golang feeds/packages/lang/golang/golang
 
 
 # 后台IP设置
