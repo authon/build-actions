@@ -14,7 +14,7 @@ git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/pass
 rm -rf package/passwall2
 git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
 pushd feeds/packages/lang
-rm -rf golang && svn co http://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang
+rm -rf golang && svn co http://140.82.113.4:443/openwrt/packages/branches/openwrt-23.05/lang/golang
 popd
 
 
