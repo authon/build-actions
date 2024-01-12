@@ -17,7 +17,8 @@ git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/pas
 # rm -rf golang && svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang
 # popd
 pushd feeds/packages/lang
-rm -rf golang && git clone -b openwrt-23.05 https://github.com/openwrt/packages/trunk/openwrt-23.05/lang/golang/ package/lang/golang
+# rm -rf golang && git clone -b openwrt-23.05 https://github.com/openwrt/packages/trunk/openwrt-23.05/lang/golang/ package/lang/golang
+rm -rf golang && git remote add -f <packages> <https://github.com/openwrt/packages> && git subtree add --prefix=</lang/golang/> <packages> <openwrt-23.05>
 popd
 
 
