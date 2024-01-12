@@ -16,10 +16,10 @@ git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/pas
 # pushd feeds/packages/lang
 # rm -rf golang && svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang
 # popd
-pushd feeds/packages/lang
+# pushd feeds/packages/lang
 # rm -rf golang && git clone -b openwrt-23.05 https://github.com/openwrt/packages/trunk/openwrt-23.05/lang/golang/ package/lang/golang
-rm -rf golang && mkdir golang && cd golang && git init -b openwrt-23.05 && git remote add origin https://github.com/openwrt/packages.git && git config core.sparsecheckout true && echo "lang/golang/*" >>.git/info/sparse-checkout && git pull origin openwrt-23.05
-popd
+# rm -rf golang && mkdir golang && cd golang && git init -b openwrt-23.05 && git remote add origin https://github.com/openwrt/packages.git && git config core.sparsecheckout true && echo "lang/golang/*" >>.git/info/sparse-checkout && git pull origin openwrt-23.05
+# popd
 
 
 # 后台IP设置
