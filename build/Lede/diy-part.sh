@@ -12,13 +12,13 @@ git clone https://github.com/fw876/helloworld.git -b main package/helloworld
 rm -rf package/passwall
 git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/passwall
 rm -rf package/passwall2
-git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2 &&
+git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
 # pushd feeds/packages/lang
 # rm -rf golang && svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang
 # popd
 pushd feeds/packages/lang
 # rm -rf golang && git clone -b openwrt-23.05 https://github.com/openwrt/packages/trunk/openwrt-23.05/lang/golang/ package/lang/golang
-rm -rf golang && git remote add -f <packages> <https://github.com/openwrt/packages> && git subtree add --prefix=</lang/golang/> <packages> <openwrt-23.05>
+rm -rf golang && gitinit && git remote add -f packages https://github.com/openwrt/packages.git && git subtree add --prefix=/lang/golang/ packages openwrt-23.05 && git pull -s subtree packages openwrt-23.05
 popd
 
 
