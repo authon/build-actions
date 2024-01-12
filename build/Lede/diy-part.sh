@@ -18,7 +18,7 @@ git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/pas
 # popd
 pushd feeds/packages/lang
 # rm -rf golang && git clone -b openwrt-23.05 https://github.com/openwrt/packages/trunk/openwrt-23.05/lang/golang/ package/lang/golang
-rm -rf golang && git init golang && git remote add origin https://github.com/openwrt/packages.git && git config core.sparsecheckout true && echo "lang/golang" >>.git/info/sparse-checkout && git pull --depth=1 origin openwrt-23.05
+rm -rf golang && mkdir golang && cd golang && git init && git remote add origin https://github.com/openwrt/packages.git && git config core.sparsecheckout true && echo "lang/golang/*" >>.git/info/sparse-checkout && git pull origin openwrt-23.05
 popd
 
 
