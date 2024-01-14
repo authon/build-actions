@@ -14,13 +14,12 @@ on:
   workflow_dispatch:
     inputs:
       REPO_BRANCH:
-        description: '（大雕源码）请选择源码分支'
+        description: '大雕源码'
         required: true
         default: 'master'
         type: choice
         options:
           - 'master'
-          - 'gl-ax1800'
       CONFIG_FILE:
         description: '请选择配置文件'
         required: true
@@ -88,13 +87,10 @@ on:
         default: 'true'
         type: boolean
 
-# 定时触发编译(1,2,5,6,8,10,12,15,16,18,20,22,25,26,28,30早3点)
-  schedule:
-    - cron: 0 19 1,4,5,7,9,11,14,15,17,19,21,24,25,27,29,31 * *
 
 # 定时触发开启开始编译(把下面两个#去掉开启,时间设置请看定时开启编译说明)
-#  schedule:
-#   - cron: 35 18 * * *
+  schedule:
+    - cron: 0 19 1,4,5,7,9,11,14,15,17,19,21,24,25,27,29,31 * *
 
 env:
   GITHUB_LINK: https://github.com/${{github.repository}}
@@ -264,16 +260,3 @@ jobs:
             curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="开始编译【${{matrix.target}}】" --data "content=🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${REPO_BRANCH}分支的${{env.TARGET_PROFILE}}】固件中,请耐心等待...... 😋(${{env.WAREHOUSE_MAN}}仓库的#${{env.RUN_NUMBER}}号)！($(date +%Y年%m月%d号%H时%M分))💐" "http://www.pushplus.plus/send"
           fi
         fi
-    - name: 触发编译通知
-      uses: emon100/Action-Serverchan@v3
-      with:
-        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
-        key: ${{ secrets.WEIXIN_SCKEY }}
-        text: 开始编译【${{matrix.target}}】
-        desp: 🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件中,请耐心等待......
-
-          😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
-          
-          🎈 触发时间：${{ env.Compte_Date }}
-          
-          🌴 固件编译已出发 🎈！！！
