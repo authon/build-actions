@@ -69,7 +69,7 @@ on:
       UPLOAD_RELEASE:
         description: '发布固件到 Github Releases'
         required: false
-        default: 'false'
+        default: 'true'
         type: boolean
       CACHEWRTBUILD_SWITCH:
         description: '缓存加速编译'
@@ -273,4 +273,4 @@ jobs:
 
           🎈 触发时间：${{ env.Compte_Date }}
 
-          🌴 固件编译已出发 🎈！！！
+          🌴 固件编译已触发 🎈！！！
