@@ -4,15 +4,32 @@
 # 自行拉取插件之前请SSH连接进入固件配置里面确认过没有你要的插件再单独拉取你需要的插件
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
+# 下载额外插件
+# src-git helloworld https://github.com/fw876/helloworld.git;main
+# git clone https://github.com/kenzok8/small.git small
+rm -rf package/helloworld
+git clone https://github.com/fw876/helloworld.git -b main package/helloworld
+rm -rf package/passwall
+git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/passwall
+rm -rf package/passwall2
+git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
+# pushd feeds/packages/lang
+# rm -rf golang && svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang
+# popd
+# pushd feeds/packages/lang
+# rm -rf golang && git clone -b openwrt-23.05 https://github.com/openwrt/packages/trunk/openwrt-23.05/lang/golang/ package/lang/golang
+# rm -rf golang && mkdir golang && cd golang && git init -b openwrt-23.05 && git remote add origin https://github.com/openwrt/packages.git && git config core.sparsecheckout true && echo "lang/golang/*" >>.git/info/sparse-checkout && git pull origin openwrt-23.05
+# popd
+
 
 # 后台IP设置
-export Ipv4_ipaddr="192.168.2.2"            # 修改openwrt后台地址(填0为关闭)
+export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
 export Netmask_netm="255.255.255.0"         # IPv4 子网掩码（默认：255.255.255.0）(填0为不作修改)
-export Op_name="OpenWrt-123"                # 修改主机名称为OpenWrt-123(填0为不作修改)
+export Op_name="Authon-WRT"                # 修改主机名称为OpenWrt-123(填0为不作修改)
 
 # 内核和系统分区大小(不是每个机型都可用)
 export Kernel_partition_size="0"            # 内核分区大小,每个机型默认值不一样 (填写您想要的数值,默认一般16,数值以MB计算，填0为不作修改),如果你不懂就填0
-export Rootfs_partition_size="0"            # 系统分区大小,每个机型默认值不一样 (填写您想要的数值,默认一般300左右,数值以MB计算，填0为不作修改),如果你不懂就填0
+export Rootfs_partition_size="800"            # 系统分区大小,每个机型默认值不一样 (填写您想要的数值,默认一般300左右,数值以MB计算，填0为不作修改),如果你不懂就填0
 
 # 默认主题设置
 export Mandatory_theme="argon"              # 将bootstrap替换您需要的主题为必选主题(可自行更改您要的,源码要带此主题就行,填写名称也要写对) (填写主题名称,填0为不作修改)
@@ -28,20 +45,20 @@ export Create_Ipv6_Lan="0"                  # 爱快+OP双系统时,爱快接管
 
 # IPV6、IPV4 选择
 export Enable_IPV6_function="0"             # 编译IPV6固件(1为启用命令,填0为不作修改)(如果跟Create_Ipv6_Lan一起启用命令的话,Create_Ipv6_Lan命令会自动关闭)
-export Enable_IPV4_function="0"             # 编译IPV4固件(1为启用命令,填0为不作修改)(如果跟Enable_IPV6_function一起启用命令的话,此命令会自动关闭)
+export Enable_IPV4_function="1"             # 编译IPV4固件(1为启用命令,填0为不作修改)(如果跟Enable_IPV6_function一起启用命令的话,此命令会自动关闭)
 
 # 替换passwall的源码(默认luci分支)
 export PassWall_luci_branch="0"             # passwall的源码分别有【luci分支】和【luci-smartdns-new-version分支】(填0为使用luci分支,填1为使用luci-smartdns-new-version分支)
 
 # 替换OpenClash的源码(默认master分支)
-export OpenClash_branch="0"                 # OpenClash的源码分别有【master分支】和【dev分支】(填0为使用master分支,填1为使用dev分支)
-export OpenClash_Core="1"                   # 增加OpenClash时,把核心下载好,(填1为下载【dev单核】,填2为下载【dev/meta/premium三核】,填0为不需要核心)
+export OpenClash_branch="1"                 # OpenClash的源码分别有【master分支】和【dev分支】(填0为使用master分支,填1为使用dev分支)
+export OpenClash_Core="2"                   # 增加OpenClash时,把核心下载好,(填1为下载【dev单核】,填2为下载【dev/meta/premium三核】,填0为不需要核心)
 
 # 个性签名,默认增加年月日[$(TZ=UTC-8 date "+%Y.%m.%d")]
-export Customized_Information="$(TZ=UTC-8 date "+%Y.%m.%d")"  # 个性签名,你想写啥就写啥，(填0为不作修改)
+export Customized_Information="$(Authon build $(TZ=UTC-8 date "+%Y.%m.%d")"  # 个性签名,你想写啥就写啥，(填0为不作修改)
 
 # 更换固件内核
-export Replace_Kernel="0"                    # 更换内核版本,在对应源码的[target/linux/架构]查看patches-x.x,看看x.x有啥就有啥内核了(填入内核x.x版本号,填0为不作修改)
+export Replace_Kernel="5.4"                    # 更换内核版本,在对应源码的[target/linux/架构]查看patches-x.x,看看x.x有啥就有啥内核了(填入内核x.x版本号,填0为不作修改)
 
 # 设置免密码登录(个别源码本身就没密码的)
 export Password_free_login="1"               # 设置首次登录后台密码为空（进入openwrt后自行修改密码）(1为启用命令,填0为不作修改)
@@ -56,7 +73,7 @@ export Disable_NaiveProxy="1"                # 因个别源码的分支不支持
 export Automatic_Mount_Settings="0"          # 编译时加入开启NTFS格式盘挂载的所需依赖(1为启用命令,填0为不作修改)
 
 # 去除网络共享(autosamba)
-export Disable_autosamba="0"                 # 去掉源码默认自选的luci-app-samba或luci-app-samba4(1为启用命令,填0为不作修改)
+export Disable_autosamba="1"                 # 去掉源码默认自选的luci-app-samba或luci-app-samba4(1为启用命令,填0为不作修改)
 
 # 其他
 export Ttyd_account_free_login="0"           # 设置ttyd免密登录(1为启用命令,填0为不作修改)
