@@ -21,6 +21,13 @@
 # rm -rf golang && mkdir golang && cd golang && git init -b openwrt-23.05 && git remote add origin https://github.com/openwrt/packages.git && git config core.sparsecheckout true && echo "lang/golang/*" >>.git/info/sparse-checkout && git pull origin openwrt-23.05
 # popd
 
+# 移除 openwrt feeds 自带的核心包
+rm -rf feeds/packages/net/{xray-core,v2ray-core,v2ray-geodata,sing-box}
+git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
+
+# 更新 golang 1.22 版本
+rm -rf feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
 
 # 后台IP设置
 export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
