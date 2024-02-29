@@ -7,12 +7,12 @@
 # 下载额外插件
 # src-git helloworld https://github.com/fw876/helloworld.git;main
 # git clone https://github.com/kenzok8/small.git small
-rm -rf package/helloworld
-git clone https://github.com/fw876/helloworld.git -b main package/helloworld
-rm -rf package/passwall
-git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/passwall
-rm -rf package/passwall2
-git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
+# rm -rf package/helloworld
+# git clone https://github.com/fw876/helloworld.git -b main package/helloworld
+# rm -rf package/passwall
+# git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/passwall
+# rm -rf package/passwall2
+# git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
 # pushd feeds/packages/lang
 # rm -rf golang && svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang
 # popd
@@ -58,7 +58,7 @@ export OpenClash_Core="2"                   # 增加OpenClash时,把核心下载
 export Customized_Information="Authon build $(TZ=UTC-8 date "+%Y.%m.%d")"  # 个性签名,你想写啥就写啥，(填0为不作修改)
 
 # 更换固件内核
-export Replace_Kernel="0"                    # 更换内核版本,在对应源码的[target/linux/架构]查看patches-x.x,看看x.x有啥就有啥内核了(填入内核x.x版本号,填0为不作修改)
+export Replace_Kernel="5.4"                    # 更换内核版本,在对应源码的[target/linux/架构]查看patches-x.x,看看x.x有啥就有啥内核了(填入内核x.x版本号,填0为不作修改)
 
 # 设置免密码登录(个别源码本身就没密码的)
 export Password_free_login="1"               # 设置首次登录后台密码为空（进入openwrt后自行修改密码）(1为启用命令,填0为不作修改)
