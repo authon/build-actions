@@ -29,6 +29,13 @@ git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
 
+# 取消默认的 autosamba 依赖的 luci-app-samba 到 slim 里
+find  ./target/linux/ -maxdepth 2 -type f  -name Makefile -exec sed -i 's#zerotier##' {} \;
+
+# sed -i 's/luci-app-xlnetacc //g' target/linux/x86/Makefilezerotier
+# sed -i 's/luci-app-jd-dailybonus //g' target/linux/x86/Makefile
+# sed -i 's/luci-app-zerotier //g' target/linux/x86/Makefile
+
 # 后台IP设置
 export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
 export Netmask_netm="255.255.255.0"         # IPv4 子网掩码（默认：255.255.255.0）(填0为不作修改)
