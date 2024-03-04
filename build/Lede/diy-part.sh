@@ -7,14 +7,14 @@
 # 下载额外插件
 # src-git helloworld https://github.com/fw876/helloworld.git;main
 # git clone https://github.com/kenzok8/small.git small
-sed -i 's/CGO_ENABLED=0/CGO_ENABLED=1/g' /Ledemaster/openwrt/feeds/packages/net/mosdns/Makefile
+# sed -i 's/CGO_ENABLED=0/CGO_ENABLED=1/g' /Ledemaster/openwrt/feeds/packages/net/mosdns/Makefile
 # sed -i 's/CGO_ENABLED=0/CGO_ENABLED=1/g' feeds/packages/net/mosdns/Makefile
-rm -rf package/helloworld
-git clone https://github.com/fw876/helloworld.git -b main package/helloworld
-rm -rf package/passwall
-git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/passwall
-rm -rf package/passwall2
-git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
+# rm -rf package/helloworld
+# git clone https://github.com/fw876/helloworld.git -b main package/helloworld
+# rm -rf package/passwall
+# git clone https://github.com/xiaorouji/openwrt-passwall.git -b main package/passwall
+# rm -rf package/passwall2
+# git clone https://github.com/xiaorouji/openwrt-passwall2.git -b main package/passwall2
 # pushd feeds/packages/lang
 # rm -rf golang && svn co https://github.com/openwrt/packages/branches/openwrt-23.05/lang/golang
 # popd
