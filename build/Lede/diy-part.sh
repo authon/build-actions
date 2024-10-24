@@ -36,7 +36,7 @@ find  ./target/linux/ -maxdepth 2 -type f  -name Makefile -exec sed -i 's#zeroti
 
 # ---------------------------------------------------------------
 ## OpenClash
-git clone --depth 1 https://github.com/vernesong/openclash.git OpenClash
+git clone https://github.com/vernesong/openclash.git OpenClash
 curl -sL -m 30 --retry 2  https://github.com/vernesong/OpenClash/raw/dev/luci-app-openclash/luasrc/view/openclash/myip.htm -o /tmp/myip.htm
 mv -f /tmp/myip.htm OpenClash/luci-app-openclash/luasrc/view/openclash/myip.htm
 rm -rf feeds/luci/applications/luci-app-openclash
