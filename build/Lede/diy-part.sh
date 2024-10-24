@@ -34,6 +34,32 @@
 # 取消默认的 autosamba 依赖的 luci-app-samba 到 slim 里
 find  ./target/linux/ -maxdepth 2 -type f  -name Makefile -exec sed -i 's#zerotier##' {} \;
 
+# ---------------------------------------------------------------
+## OpenClash
+git clone --depth 1 https://github.com/vernesong/openclash.git OpenClash
+curl -sL -m 30 --retry 2  https://github.com/vernesong/OpenClash/raw/dev/luci-app-openclash/luasrc/view/openclash/myip.htm -o /tmp/myip.htm
+mv -f /tmp/myip.htm OpenClash/luci-app-openclash/luasrc/view/openclash/myip.htm
+rm -rf feeds/luci/applications/luci-app-openclash
+mv OpenClash/luci-app-openclash feeds/luci/applications/luci-app-openclash
+# ---------------------------------------------------------------
+
+# ##------------- meta core ---------------------------------
+curl -sL -m 30 --retry 2 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-arm64.tar.gz -o /tmp/clash.tar.gz
+tar zxvf /tmp/clash.tar.gz -C /tmp >/dev/null 2>&1
+chmod +x /tmp/clash >/dev/null 2>&1
+mv /tmp/clash feeds/luci/applications/luci-app-openclash/root/etc/openclash/core/clash_meta >/dev/null 2>&1
+# ##---------------------------------------------------------
+
+# ##-------------- GeoIP 数据库 -----------------------------
+curl -sL -m 30 --retry 2 https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat -o /tmp/GeoIP.dat
+mv /tmp/GeoIP.dat feeds/luci/applications/luci-app-openclash/root/etc/openclash/GeoIP.dat >/dev/null 2>&1
+# ##---------------------------------------------------------
+
+# ##-------------- GeoSite 数据库 ---------------------------
+curl -sL -m 30 --retry 2 https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat -o /tmp/GeoSite.dat
+mv -f /tmp/GeoSite.dat feeds/luci/applications/luci-app-openclash/root/etc/openclash/GeoSite.dat >/dev/null 2>&1
+# ##---------------------------------------------------------
+
 # sed -i 's/luci-app-xlnetacc //g' target/linux/x86/Makefilezerotier
 # sed -i 's/luci-app-jd-dailybonus //g' target/linux/x86/Makefile
 # sed -i 's/luci-app-zerotier //g' target/linux/x86/Makefile
@@ -68,7 +94,7 @@ export PassWall_luci_branch="0"             # passwall的源码分别有【luci�
 
 # 替换OpenClash的源码(默认master分支)
 export OpenClash_branch="0"                 # OpenClash的源码分别有【master分支】和【dev分支】(填0为使用master分支,填1为使用dev分支)
-export OpenClash_Core="2"                   # 增加OpenClash时,把核心下载好,(填1为下载【dev单核】,填2为下载【dev/meta/premium三核】,填0为不需要核心)
+export OpenClash_Core="0"                   # 增加OpenClash时,把核心下载好,(填1为下载【dev单核】,填2为下载【dev/meta/premium三核】,填0为不需要核心)
 
 # 个性签名,默认增加年月日[$(TZ=UTC-8 date "+%Y.%m.%d")]
 export Customized_Information="Authon build $(TZ=UTC-8 date "+%Y.%m.%d")"  # 个性签名,你想写啥就写啥，(填0为不作修改)
