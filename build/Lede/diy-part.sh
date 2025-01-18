@@ -33,6 +33,7 @@
 
 # passwall
 rm -rf ../feeds/packages/net/{chinadns*,hysteria,geoview,trojan*,xray*,v2ray*,sing*}
+rm -rf ../feeds/luci/applications/luci-app-passwall2/
 rm -rf ../feeds/luci/applications/luci-app-passwall/
 git clone https://github.com/xiaorouji/openwrt-passwall-packages
 git clone https://github.com/xiaorouji/openwrt-passwall2.git
