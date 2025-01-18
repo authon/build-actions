@@ -27,6 +27,13 @@
 # rm -rf feeds/packages/net/{xray-core,v2ray-core,v2ray-geodata,sing-box}
 # git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
 
+# passwall
+rm -rf ../feeds/packages/net/{chinadns*,hysteria,geoview,trojan*,xray*,v2ray*,sing*}
+rm -rf ../feeds/luci/applications/luci-app-passwall2/
+rm -rf ../feeds/luci/applications/luci-app-passwall/
+git clone https://github.com/xiaorouji/openwrt-passwall-packages
+git clone https://github.com/xiaorouji/openwrt-passwall2.git
+
 # 更新 golang 1.22 版本
 # rm -rf feeds/packages/lang/golang
 # git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
