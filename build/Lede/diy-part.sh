@@ -31,6 +31,12 @@
 # rm -rf feeds/packages/lang/golang
 # git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
 
+# passwall
+rm -rf ../feeds/packages/net/{chinadns*,hysteria,geoview,trojan*,xray*,v2ray*,sing*}
+rm -rf ../feeds/luci/applications/luci-app-passwall/
+git clone https://github.com/xiaorouji/openwrt-passwall-packages
+git clone https://github.com/xiaorouji/openwrt-passwall2.git
+
 # 取消默认的 autosamba 依赖的 luci-app-samba 到 slim 里
 find  ./target/linux/ -maxdepth 2 -type f  -name Makefile -exec sed -i 's#zerotier##' {} \;
 
