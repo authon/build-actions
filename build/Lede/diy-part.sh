@@ -37,6 +37,7 @@
 # rm -rf ../feeds/luci/applications/luci-app-passwall/
 # git clone https://github.com/xiaorouji/openwrt-passwall-packages
 # git clone https://github.com/xiaorouji/openwrt-passwall2.git
+src-git small https://github.com/kenzok8/small
 
 # 取消默认的 autosamba 依赖的 luci-app-samba 到 slim 里
 find  ./target/linux/ -maxdepth 2 -type f  -name Makefile -exec sed -i 's#zerotier##' {} \;
