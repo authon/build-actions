@@ -37,7 +37,7 @@
 # rm -rf ../feeds/luci/applications/luci-app-passwall/
 # git clone https://github.com/xiaorouji/openwrt-passwall-packages
 # git clone https://github.com/xiaorouji/openwrt-passwall2.git
-sed -i 's#GO_PKG_TARGET_VARS.*# #g' ${HOME_PATH}/feeds/packages/utils/v2dat/Makefile
+# sed -i 's#GO_PKG_TARGET_VARS.*# #g' ${HOME_PATH}/feeds/packages/utils/v2dat/Makefile
 sed -i '1i src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
 ./scripts/feeds update -a && rm -rf feeds/luci/applications/luci-app-mosdns && rm -rf feeds/packages/net/{alist,adguardhome,smartdns}
 rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd-alt,miniupnpd-iptables,wireless-regdb}
