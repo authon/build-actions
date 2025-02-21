@@ -51,12 +51,12 @@ find  ./target/linux/ -maxdepth 2 -type f  -name Makefile -exec sed -i 's#zeroti
 # mv OpenClash/luci-app-openclash feeds/luci/applications/luci-app-openclash
 # ---------------------------------------------------------------
 
-# ##------------- meta core ---------------------------------
-# curl -sL -m 30 --retry 2 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-arm64.tar.gz -o /tmp/clash.tar.gz
-# tar zxvf /tmp/clash.tar.gz -C /tmp >/dev/null 2>&1
-# chmod +x /tmp/clash >/dev/null 2>&1
-# mv /tmp/clash feeds/luci/applications/luci-app-openclash/root/etc/openclash/core/clash_meta >/dev/null 2>&1
-# ##---------------------------------------------------------
+##------------- meta core ---------------------------------
+curl -sL -m 30 --retry 2 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-arm64.tar.gz -o /tmp/clash.tar.gz
+tar zxvf /tmp/clash.tar.gz -C /tmp >/dev/null 2>&1
+chmod +x /tmp/clash >/dev/null 2>&1
+mv /tmp/clash feeds/luci/applications/luci-app-openclash/root/etc/openclash/core/clash_meta >/dev/null 2>&1
+##---------------------------------------------------------
 
 # ##-------------- GeoIP 数据库 -----------------------------
 # curl -sL -m 30 --retry 2 https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat -o /tmp/GeoIP.dat
