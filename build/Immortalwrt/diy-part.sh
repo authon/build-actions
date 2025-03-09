@@ -34,6 +34,9 @@
 # 取消默认的 autosamba 依赖的 luci-app-samba 到 slim 里
 find  ./target/linux/ -maxdepth 2 -type f  -name Makefile -exec sed -i 's#zerotier##' {} \;
 
+# 添加nikki
+git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git package/nikki
+
 # ---------------------------------------------------------------
 ## OpenClash
 # git clone --depth 1 https://github.com/vernesong/openclash.git OpenClash
