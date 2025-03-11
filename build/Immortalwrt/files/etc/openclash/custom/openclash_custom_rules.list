@@ -6,8 +6,8 @@ rules:
 ##- DOMAIN-SUFFIX,ad.com,REJECT #匹配域名后缀(拒绝)
 ##- IP-CIDR,127.0.0.0/8,DIRECT #匹配数据目标IP(直连)
 ##- SRC-IP-CIDR,192.168.1.201/32,DIRECT #匹配数据发起IP(直连)
-- SRC-IP-CIDR,10.10.10.13/32,DIRECT #匹配数据发起IP(直连)DSM DDNS
-- SRC-IP-CIDR,10.10.10.14/32,DIRECT #匹配数据发起IP(直连)Qbit
+# - SRC-IP-CIDR,10.10.10.13/32,DIRECT #匹配数据发起IP(直连)Qbit
+- SRC-IP-CIDR,10.10.10.14/32,DIRECT #匹配数据发起IP(直连)DSM DDNS
 # - SRC-IP-CIDR,10.10.10.20/32,DIRECT #匹配数据发起IP(直连)Jeckett
 - SRC-IP-CIDR,10.10.10.149/32,DIRECT #匹配数据发起IP(直连)iphone8
 - SRC-IP-CIDR,10.10.10.204/32,DIRECT #匹配数据发起IP(直连)90GT
