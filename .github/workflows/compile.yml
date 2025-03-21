@@ -9,7 +9,7 @@ on:
     branches:
       - main
     paths:
-      - 'build/Lede/relevance/start'
+      - 'bconfig'
 
 env:
   GITHUB_LINK: https://github.com/${{github.repository}}
@@ -34,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [Lede]
+        target: [Immortalwrt]
 
     steps:    
     - name: 准备结束
@@ -83,31 +83,6 @@ jobs:
         sudo mkdir -p /${{ env.DIY_WORK }}
         sudo chown ${USER}:${GROUPS} /${{ env.DIY_WORK }}
 
-    #- name: 初始化系统环境
-      #env:
-        #DEBIAN_FRONTEND: noninteractive
-      #run: |
-        #sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-        #sudo -E apt-mark hold grub-efi-amd64-signed
-        #sudo -E apt update -y
-        #sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap* || true
-        #sudo -E apt full-upgrade -y
-        #sudo -E apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
-                   #bzip2 ccache clang cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext gcc-multilib \
-                   #g++-multilib git gnutls-dev gperf haveged help2man intltool lib32gcc-s1 libc6-i386 libelf-dev \
-                   #libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libpython3-dev \
-                   #libreadline-dev libssl-dev libtool libyaml-dev libz-dev lld llvm lrzsz mkisofs msmtp nano \
-                   #ninja-build p7zip p7zip-full patch pkgconf python3 python3-pip python3-ply python3-docutils \
-                   #python3-pyelftools qemu-utils re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs \
-                   #upx-ucl unzip vim wget xmlto xxd zlib1g-dev zstd libfuse-dev genisoimage python3-setuptools || true
-        #sudo -E systemctl daemon-reload
-        #sudo -E apt -y autoremove --purge
-        #sudo -E apt clean
-        #source ${GITHUB_WORKSPACE}/build/${{matrix.target}}/common.sh && Diy_update
-        #sudo timedatectl set-timezone "$TZ"
-        #sudo mkdir -p /${{ env.DIY_WORK }}
-        #sudo chown ${USER}:${GROUPS} /${{ env.DIY_WORK }}
-        
     - name: 下载"${{matrix.target}}"源码
       working-directory: /${{ env.DIY_WORK }}
       run: |
@@ -255,17 +230,3 @@ jobs:
             curl -k --data token="${{ secrets.PUSH_PLUS_TOKEN }}" --data title="[${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}]编译成功" --data "content=我亲爱的✨主人✨：您使用【${{matrix.target}}】文件夹编译【${REPO_BRANCH}分支的${{env.TARGET_PROFILE}}】固件顺利编译完成了✌️💯💐(${{env.WAREHOUSE_MAN}}仓库的#${{env.RUN_NUMBER}}号)！($(date +%Y年%m月%d号%H时%M分))" "http://www.pushplus.plus/send"
           fi
         fi
-
-    - name: 完成编译通知
-      uses: emon100/Action-Serverchan@v3
-      with:
-        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
-        key: ${{ secrets.WEIXIN_SCKEY }}
-        text: 完成编译【${{matrix.target}}】
-        desp: 🎉 主人💕：您的脚本编译成功【${{matrix.target}}】文件夹编译【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
-
-          😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
-
-          🎈 完成时间：${{ env.date }}
-
-          🌴 固件已经编译完成 🎈！！！
