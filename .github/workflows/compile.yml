@@ -231,7 +231,7 @@ jobs:
           fi
         fi
 
-    - name: 触发编译通知
+    - name: 完成编译通知
       uses: emon100/Action-Serverchan@v3
       with:
         SCKEY: ${{ secrets.WEIXIN_SCKEY }}
