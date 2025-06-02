@@ -66,7 +66,7 @@ on:
       UPLOAD_RELEASE:
         description: '发布固件到 Github Releases'
         required: false
-        default: 'false'
+        default: 'true'
         type: boolean
       CACHEWRTBUILD_SWITCH:
         description: '缓存加速编译'
@@ -82,8 +82,9 @@ on:
 
 # 如若启动定时编译的话,配置文件是设置对应文件夹内的settings.ini文件
 # 定时触发开启开始编译(把下面两个#去掉开启,时间设置请看定时开启编译说明)
-#  schedule:
-#   - cron: 35 18 * * *
+# 定时触发开启开始编译(把下面两个#去掉开启,时间设置请看定时开启编译说明)
+  schedule:
+     - cron: 0 19 1,4,5,7,9,11,14,15,17,19,21,24,25,27,29,31 * *
 
 env:
   GIT_REPOSITORY: ${{github.repository}}
@@ -166,3 +167,17 @@ jobs:
     - name: 触发启动"${{ matrix.target }}"开始编译
       if: steps.info.outcome == 'success'
       uses: 281677160/common@trigger
+
+    - name: 触发编译通知
+      uses: emon100/Action-Serverchan@v3
+      with:
+        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        key: ${{ secrets.WEIXIN_SCKEY }}
+        text: 开始编译【${{matrix.target}}】
+        desp: 🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件中,请耐心等待......
+
+          😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
+
+          🎈 触发时间：${{ env.Compte_Date }}
+
+          🌴 固件编译已触发 🎈！！！
