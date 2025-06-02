@@ -120,3 +120,17 @@ jobs:
     - name: 上传,发布,信息通知
       if: steps.compile.outcome == 'success'
       uses: 281677160/common@uploads
+
+    - name: 完成编译通知
+      uses: emon100/Action-Serverchan@v3
+      with:
+        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        key: ${{ secrets.WEIXIN_SCKEY }}
+        text: 完成编译【${{matrix.target}}】
+        desp: 🎉 主人💕：完成编译【${{matrix.target}}】文件夹编译【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
+
+          😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
+
+          🎈 完成时间：${{ env.Compte_Date }}
+
+          🌴 固件编译已完成 🎈！！！
