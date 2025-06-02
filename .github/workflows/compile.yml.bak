@@ -131,6 +131,6 @@ jobs:
 
           😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
 
-          🎈 完成时间：$(date +%Y年%m月%d号%H时%M分
+          🎈 完成时间：${{ env.Compte_Date }}
 
           🌴 固件编译已完成 🎈！！！
