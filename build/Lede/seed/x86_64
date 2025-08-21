@@ -68,8 +68,6 @@ CONFIG_PACKAGE_luci-app-control-timewol=y
 CONFIG_PACKAGE_luci-app-control-webrestriction=y
 CONFIG_PACKAGE_luci-app-control-weburl=y
 # CONFIG_PACKAGE_luci-app-ddns is not set
-CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs=y
-CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk=y
 CONFIG_PACKAGE_luci-app-fileassistant=y
 CONFIG_PACKAGE_luci-app-openclash=y
 CONFIG_PACKAGE_luci-app-passwall=y
@@ -140,7 +138,7 @@ CONFIG_PACKAGE_v2ray-core=y
 CONFIG_PACKAGE_v2ray-geoip=y
 CONFIG_PACKAGE_v2ray-geosite=y
 CONFIG_PACKAGE_v2ray-plugin=y
-# CONFIG_PACKAGE_vsftpd-alt is not set
+# CONFIG_PACKAGE_vsftpd is not set
 CONFIG_PACKAGE_xray-plugin=y
 CONFIG_RUBY_ENABLE_YJIT=y
 CONFIG_SING_BOX_WITH_CLASH_API=y
@@ -201,6 +199,7 @@ CONFIG_PACKAGE_luci-app-ksmbd=y
 # CONFIG_PACKAGE_luci-i18n-ksmbd-tr is not set
 # CONFIG_PACKAGE_luci-i18n-ksmbd-uk is not set
 # CONFIG_PACKAGE_luci-i18n-ksmbd-vi is not set
+# CONFIG_PACKAGE_luci-i18n-ksmbd-yua is not set
 CONFIG_PACKAGE_luci-i18n-ksmbd-zh-cn=y
 # CONFIG_PACKAGE_luci-i18n-ksmbd-zh-tw is not set
 CONFIG_PACKAGE_wsdd2=y
