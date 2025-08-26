@@ -184,7 +184,7 @@ jobs:
 
           😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
 
-          🎈 触发时间：${{ format('{0:yyyy年MM月dd号HH时mm分}', github.event.head_commit.timestamp) }}
+          🎈 完成时间：${{ env.FINISH_TIME }}
 
           🌴 固件编译已触发 🎈！！！
   #🎈 完成时间：${{ env.FINISH_TIME }}
