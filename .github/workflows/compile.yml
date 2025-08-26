@@ -33,6 +33,11 @@ jobs:
        target: [Immortalwrt]
 
     steps:
+    # 在编译步骤前记录开始时间
+    - name: 记录开始时间
+      run: |
+        echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
+        
     - name: 释放Ubuntu磁盘空间
       uses: danshui-git/free-disk-space@main
       with:
@@ -125,33 +130,44 @@ jobs:
     - name: 记录完成时间
       run: |
         echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
-  # 这个步骤会将当前时间写入环境变量 FINISH_TIME
+ # 这个步骤会将当前时间写入环境变量 FINISH_TIME
 
-# 编译成功通知（仅当编译步骤成功时触发）
+ # 记录完成时间并计算耗时
+    - name: 记录完成时间和计算耗时
+      run: |
+        echo "FINISH_TIME_TS=$(date +%s)" >> $GITHUB_ENV
+        DURATION=$((FINISH_TIME_TS - START_TIME))
+        echo "DURATION=$(date -u -d @$DURATION +'%H小时%M分钟%S秒')" >> $GITHUB_ENV
+        echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
+
+ # 编译成功通知
     - name: 编译成功通知
       if: success() && steps.compile.outcome == 'success'
       uses: emon100/Action-Serverchan@v3
       with:
-         SCKEY: ${{ secrets.WEIXIN_SCKEY }}
-         text: 编译成功【${{matrix.target}}】
-         desp: 🎉 主人💕：【${{matrix.target}}】文件夹编译成功！
+        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        text: 编译成功【${{matrix.target}}】
+        desp: 🎉 主人💕：【${{matrix.target}}】文件夹编译成功！
     
-           📦 编译目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
-           😋 仓库信息：【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
-           🎈 完成时间：${{ env.FINISH_TIME }}
-           🌴 固件编译已完成 🎈！！！
+          📦 编译目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
+          😋 仓库信息：【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
+          ⏱️ 编译耗时：${{ env.DURATION }}
+          🎈 完成时间：${{ env.FINISH_TIME }}
+          🌴 固件编译已完成 🎈！！！
 
-# 编译失败通知（仅当编译步骤失败时触发）
+ # 编译失败通知
     - name: 编译失败通知
       if: failure() && steps.compile.outcome == 'failure'
       uses: emon100/Action-Serverchan@v3
       with:
-         SCKEY: ${{ secrets.WEIXIN_SCKEY }}
-         text: 编译失败【${{matrix.target}}】
-         desp: 🚨 主人💕：【${{matrix.target}}】文件夹编译失败！
+        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        text: 编译失败【${{matrix.target}}】
+        desp: 🚨 主人💕：【${{matrix.target}}】文件夹编译失败！
     
-           ❌ 失败目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
-           😋 仓库信息：【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
-           🎈 失败时间：${{ env.FINISH_TIME }}
-           🔗 查看详情：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-           🌴 请及时排查问题 🚨！！！
+          ❌ 失败目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
+          😋 仓库信息：【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
+          ⏱️ 耗时：${{ env.DURATION }}
+          🎈 失败时间：${{ env.FINISH_TIME }}
+          🔗 查看详情：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          🌴 请及时排查问题 🚨！！！
+
