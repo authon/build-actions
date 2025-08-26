@@ -168,6 +168,12 @@ jobs:
       if: steps.info.outcome == 'success'
       uses: 281677160/common@trigger
 
+    # 先添加一个步骤获取完成时间
+    - name: 记录完成时间
+      run: |
+        echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
+    # 这个步骤会将当前时间写入环境变量 FINISH_TIME
+
     - name: 触发编译通知
       uses: emon100/Action-Serverchan@v3
       with:
@@ -181,3 +187,4 @@ jobs:
           🎈 触发时间：${{ format('{0:yyyy年MM月dd号HH时mm分}', github.event.head_commit.timestamp) }}
 
           🌴 固件编译已触发 🎈！！！
+  #🎈 完成时间：${{ env.FINISH_TIME }}
