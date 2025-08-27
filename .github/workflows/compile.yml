@@ -150,8 +150,9 @@ jobs:
       with:
         SCKEY: ${{ secrets.WEIXIN_SCKEY }}
         text: 编译成功【${{matrix.target}}】
-        desp: 🎉 主人💕：【${{matrix.target}}】文件夹编译成功！
-    
+        desp: |
+          🎉 主人💕：【${{matrix.target}}】文件夹编译成功！
+          
           📦 编译目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
           😋 仓库信息：【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
           ⏱️ 实际编译时长：${{ env.DURATION }}
@@ -166,7 +167,8 @@ jobs:
       with:
         SCKEY: ${{ secrets.WEIXIN_SCKEY }}
         text: 编译失败【${{matrix.target}}】
-        desp: 🚨 主人💕：【${{matrix.target}}】文件夹编译失败！
+        desp: |
+          🚨 主人💕：【${{matrix.target}}】文件夹编译失败！
     
           ❌ 失败目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
           😋 仓库信息：【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
