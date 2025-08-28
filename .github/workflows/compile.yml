@@ -60,7 +60,7 @@ jobs:
         sudo mkdir -p /${{ env.DIY_WORK }}
         sudo chown ${USER}:${GROUPS} /${{ env.DIY_WORK }}
 
-    # 1. 编译开始前立即记录时间（紧邻编译步骤）
+# 1. 记录编译开始时间（直接使用全局 TZ）
     - name: 记录编译开始时间
       run: |
         echo "COMPILE_START=$(date +%s)" >> $GITHUB_ENV
@@ -128,36 +128,38 @@ jobs:
       uses: 281677160/common@uploads
 
       # 在编译步骤后、计算时长前添加提取内核版本的步骤
-    - name: 提取内核版本
+    - name: 提取 Immortalwrt 内核版本
       if: always()
       run: |
-        if [ -f ".config" ]; then
-          KERNEL_VERSION=$(grep "KERNEL_PATCHVER" .config | cut -d'=' -f2)
-          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-        elif [ -d "build_dir/target-*/linux-*/" ]; then
-          KERNEL_VERSION=$(ls build_dir/target-*/linux-*/ | grep -oP 'linux-\K[\d.]+')
+        kernel_makefile="target/linux/x86/Makefile"
+        if [ -f "$kernel_makefile" ]; then
+          KERNEL_VERSION=$(grep -E '^KERNEL_PATCHVER[:=]' "$kernel_makefile" | awk -F'[:=]' '{print $2}' | tr -d ' ')
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
         else
           echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
         fi
 
-    # 修复后的计算编译时长步骤
     - name: 计算编译时长
-      if: always()  # 无论成功失败都执行
+      if: always()  # 无论编译成功/失败都执行
       run: |
-        echo "COMPILE_END=$(date +%s)" >> $GITHUB_ENV
-        echo "FINISH_TIME=$(TZ='Asia/Shanghai' date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
-    
-        if [ $COMPILE_END -ge $COMPILE_START ]; then
-          DURATION=$((COMPILE_END - COMPILE_START))
+        # 读取开始时间戳（从环境变量读入 Shell 变量）
+        local_start=$COMPILE_START
+        # 直接获取当前结束时间戳（Shell 命令）
+        local_end=$(date +%s)
+        
+        if [ $local_end -ge $local_start ]; then
+          duration=$((local_end - local_start))
         else
-          DURATION=$(( (86400 - COMPILE_START) + COMPILE_END ))
+          # 跨天场景处理（如 23:50 开始 → 00:10 结束）
+          duration=$(( (86400 - local_start) + local_end ))
         fi
     
-        HOURS=$((DURATION / 3600))
-        MINUTES=$(( (DURATION % 3600) / 60 ))
-        SECONDS=$((DURATION % 60))
-        echo "DURATION=${HOURS}小时${MINUTES}分钟${SECONDS}秒" >> $GITHUB_ENV
+        hours=$((duration / 3600))
+        minutes=$(( (duration % 3600) / 60 ))
+        seconds=$((duration % 60))
+        echo "DURATION=${hours}小时${minutes}分钟${seconds}秒" >> $GITHUB_ENV
+
+        echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
 
     # 4. 成功通知（使用精确计算的时长）
     - name: 编译成功通知
