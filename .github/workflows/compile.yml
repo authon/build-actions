@@ -127,17 +127,19 @@ jobs:
       if: steps.compile.outcome == 'success'
       uses: 281677160/common@uploads
 
+    # 修复后的计算编译时长步骤
     - name: 计算编译时长
-      if: always()  # 即使编译失败也会执行
+      if: always()  # 无论成功失败都执行
       run: |
-        # 记录结束时间
         echo "COMPILE_END=$(date +%s)" >> $GITHUB_ENV
-        echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
-        if [ ${{ env.COMPILE_END }} -ge ${{ env.COMPILE_START }} ]; then
+        echo "FINISH_TIME=$(TZ='Asia/Shanghai' date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
+    
+        if [ $COMPILE_END -ge $COMPILE_START ]; then
           DURATION=$((COMPILE_END - COMPILE_START))
         else
           DURATION=$(( (86400 - COMPILE_START) + COMPILE_END ))
         fi
+    
         HOURS=$((DURATION / 3600))
         MINUTES=$(( (DURATION % 3600) / 60 ))
         SECONDS=$((DURATION % 60))
