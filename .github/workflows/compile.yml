@@ -128,17 +128,33 @@ jobs:
       if: steps.compile.outcome == 'success'
       uses: 281677160/common@uploads
 
-      # 在编译步骤后、计算时长前添加提取内核版本的步骤
-    - name: 提取 Immortalwrt 内核版本
+    - name: 提取内核版本
       if: always()
       run: |
-        kernel_makefile="target/linux/x86/Makefile"
-        if [ -f "$kernel_makefile" ]; then
-          KERNEL_VERSION=$(grep -E '^KERNEL_PATCHVER[:=]' "$kernel_makefile" | awk -F'[:=]' '{print $2}' | tr -d ' ')
+        if grep -q "KERNEL_PATCHVER" .config; then
+          KERNEL_VERSION=$(grep "KERNEL_PATCHVER" .config | cut -d'=' -f2 | tr -d ' "')
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-        else
-          echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
+          echo "已从.config提取内核版本: $KERNEL_VERSION"
+          exit 0
         fi
+
+        ARCH="x86"  # 你的架构是x86_64，对应目录是x86
+        if [ -f "target/linux/$ARCH/Makefile" ]; then
+          KERNEL_VERSION=$(grep "KERNEL_PATCHVER" "target/linux/$ARCH/Makefile" | cut -d'=' -f2 | tr -d ' ')
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+          echo "已从$ARCH架构Makefile提取内核版本: $KERNEL_VERSION"
+          exit 0
+        fi
+
+        if [ -f "build_dir/target-*/linux-*/.kernelversion" ]; then
+          KERNEL_VERSION=$(cat build_dir/target-*/linux-*/.kernelversion | cut -d'.' -f1-2)
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+          echo "已从编译文件提取内核版本: $KERNEL_VERSION"
+          exit 0
+        fi
+
+        echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
+        echo "无法提取内核版本"
 
     - name: 计算编译时长
       if: always()  # 无论编译成功/失败都执行
