@@ -33,6 +33,13 @@ jobs:
        target: [Lede]
 
     steps:
+
+  # 1. 记录编译开始时间（直接使用全局 TZ）
+    - name: 记录编译开始时间
+      run: |
+        echo "COMPILE_START=$(date +%s)" >> $GITHUB_ENV
+        echo "START_TIME_DISPLAY=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
+        
     - name: 释放Ubuntu磁盘空间
       uses: danshui-git/free-disk-space@main
       with:
@@ -59,12 +66,6 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /${{ env.DIY_WORK }}
         sudo chown ${USER}:${GROUPS} /${{ env.DIY_WORK }}
-
-# 1. 记录编译开始时间（直接使用全局 TZ）
-    - name: 记录编译开始时间
-      run: |
-        echo "COMPILE_START=$(date +%s)" >> $GITHUB_ENV
-        echo "START_TIME_DISPLAY=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
        
     - name: 下载"${{matrix.target}}"源码
       working-directory: /${{ env.DIY_WORK }}
