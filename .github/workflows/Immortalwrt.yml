@@ -102,6 +102,12 @@ jobs:
         # 请勿对 target: [Immortalwrt] 做任何修改
         
     steps:
+      # 1. 记录编译开始时间（直接使用全局 TZ）
+    - name: 记录编译开始时间
+      run: |
+        echo "COMPILE_START=$(date +%s)" >> $GITHUB_ENV
+        echo "START_TIME_DISPLAY=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
+        
     - name: 准备结束
       uses: actions/checkout@v4
       
@@ -160,24 +166,99 @@ jobs:
       if: steps.info.outcome == 'success'
       uses: 281677160/common@trigger
 
-    # 先添加一个步骤获取完成时间
-    - name: 记录完成时间
+    - name: 提取内核版本（直接使用现成环境变量）
+      if: always()
       run: |
-        echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
-    # 这个步骤会将当前时间写入环境变量 FINISH_TIME
+        # 优先使用明确的 LINUX_KERNEL 变量（日志中已显示该值为 6.12）
+        if [ -n "${{ env.LINUX_KERNEL }}" ]; then
+          KERNEL_VERSION="${{ env.LINUX_KERNEL }}"
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+          echo "已从环境变量 LINUX_KERNEL 提取内核版本: $KERNEL_VERSION"
+          exit 0
+        fi
 
-    - name: 触发编译通知
+        # 备选：使用 patchverl 变量（日志中该值也为 6.12）
+        elif [ -n "${{ env.patchverl }}" ]; then
+          KERNEL_VERSION="${{ env.patchverl }}"
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+          echo "已从环境变量 patchverl 提取内核版本: $KERNEL_VERSION"
+          exit 0
+        fi
+
+        # 兜底：若上述变量意外缺失，显示未知
+        else
+          echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
+          echo "未找到内核版本相关环境变量"
+        fi
+
+    - name: 计算编译时长
+      if: always()  # 无论编译成功/失败都执行
+      run: |
+        # 读取开始时间戳（从环境变量读入 Shell 变量）
+        local_start=$COMPILE_START
+        # 直接获取当前结束时间戳（Shell 命令）
+        local_end=$(date +%s)
+        
+        if [ $local_end -ge $local_start ]; then
+          duration=$((local_end - local_start))
+        else
+          # 跨天场景处理（如 23:50 开始 → 00:10 结束）
+          duration=$(( (86400 - local_start) + local_end ))
+        fi
+    
+        hours=$((duration / 3600))
+        minutes=$(( (duration % 3600) / 60 ))
+        seconds=$((duration % 60))
+        echo "DURATION=${hours}小时${minutes}分钟${seconds}秒" >> $GITHUB_ENV
+
+        echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
+        
+    #- name: 触发编译通知
+      #uses: emon100/Action-Serverchan@v3
+      #with:
+        #SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        ## key: ${{ secrets.WEIXIN_SCKEY }}
+        #text: 开始编译【${{matrix.target}}】
+        #desp: 🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件中,请耐心等待......
+
+          #😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
+
+          #🎈 完成时间：${{ env.FINISH_TIME }}
+
+          #🌴 固件编译已触发 🎈！！！
+  #🎈 完成时间：${{ env.FINISH_TIME }}
+  #🎈 触发时间：${{ format('{0:yyyy年MM月dd号HH时mm分}', github.event.head_commit.timestamp) }}
+
+      # 4. 成功通知（使用精确计算的时长）
+    - name: 编译成功通知
+      if: success() && steps.compile.outcome == 'success'
       uses: emon100/Action-Serverchan@v3
       with:
         SCKEY: ${{ secrets.WEIXIN_SCKEY }}
-        # key: ${{ secrets.WEIXIN_SCKEY }}
-        text: 开始编译【${{matrix.target}}】
-        desp: 🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件中,请耐心等待......
-
-          😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
-
+        text: 编译触发【${{matrix.target}}】
+        desp: |
+          🎉 主人💕：【${{matrix.target}}】文件夹成功触发编译！
+          📦 编译目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件,请耐心等待......
+          🧮 内核版本：${{ env.KERNEL_VERSION }}
+          ⏱️ 定制编译时长：${{ env.DURATION }}
+          🕒 开始时间：${{ env.START_TIME_DISPLAY }}
           🎈 完成时间：${{ env.FINISH_TIME }}
+          🌴 编译已成功触发 🎈！！！
 
-          🌴 固件编译已触发 🎈！！！
-  #🎈 完成时间：${{ env.FINISH_TIME }}
-  #🎈 触发时间：${{ format('{0:yyyy年MM月dd号HH时mm分}', github.event.head_commit.timestamp) }}
+    # 5. 失败通知（同样使用精确时长）
+    - name: 编译触发失败通知
+      if: failure() && steps.compile.outcome == 'failure'
+      uses: emon100/Action-Serverchan@v3
+      with:
+        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        text: 编译失败【${{matrix.target}}】
+        desp: |
+          🚨 主人💕：【${{matrix.target}}】文件夹触发编译失败！
+          ❌ 失败目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
+          🧮 内核版本：${{ env.KERNEL_VERSION }}
+          😋 仓库信息：【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
+          ⏱️ 失败时已耗时：${{ env.DURATION }}
+          🕒 开始时间：${{ env.START_TIME_DISPLAY }}
+          🎈 失败时间：${{ env.FINISH_TIME }}
+          🔗 查看详情：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          🌴 请及时排查问题 🚨！！！
