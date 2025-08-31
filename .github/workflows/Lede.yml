@@ -171,6 +171,7 @@ jobs:
         gh_token: ${{ secrets.REPO_TOKEN }}
         
     - name: 触发启动"${{ matrix.target }}"开始编译
+      id: compile  # 添加这一行，定义compile步骤ID
       if: steps.info.outcome == 'success'
       uses: 281677160/common@trigger
 
@@ -238,7 +239,7 @@ jobs:
   #🎈 触发时间：${{ format('{0:yyyy年MM月dd号HH时mm分}', github.event.head_commit.timestamp) }}
 
       # 4. 成功通知（使用精确计算的时长）
-    - name: 编译成功通知
+    - name: 编译成功触发通知
       if: success() && steps.compile.outcome == 'success'
       uses: emon100/Action-Serverchan@v3
       with:
