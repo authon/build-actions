@@ -128,33 +128,30 @@ jobs:
       if: steps.compile.outcome == 'success'
       uses: 281677160/common@uploads
 
-    - name: 提取内核版本
+    - name: 提取内核版本（直接使用现成环境变量）
       if: always()
       run: |
-        if grep -q "KERNEL_PATCHVER" .config; then
-          KERNEL_VERSION=$(grep "KERNEL_PATCHVER" .config | cut -d'=' -f2 | tr -d ' "')
+        # 优先使用明确的 LINUX_KERNEL 变量（日志中已显示该值为 6.12）
+        if [ -n "${{ env.LINUX_KERNEL }}" ]; then
+          KERNEL_VERSION="${{ env.LINUX_KERNEL }}"
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-          echo "已从.config提取内核版本: $KERNEL_VERSION"
+          echo "已从环境变量 LINUX_KERNEL 提取内核版本: $KERNEL_VERSION"
           exit 0
         fi
 
-        ARCH="x86"  # 你的架构是x86_64，对应目录是x86
-        if [ -f "target/linux/$ARCH/Makefile" ]; then
-          KERNEL_VERSION=$(grep "KERNEL_PATCHVER" "target/linux/$ARCH/Makefile" | cut -d'=' -f2 | tr -d ' ')
+        # 备选：使用 patchverl 变量（日志中该值也为 6.12）
+        elif [ -n "${{ env.patchverl }}" ]; then
+          KERNEL_VERSION="${{ env.patchverl }}"
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-          echo "已从$ARCH架构Makefile提取内核版本: $KERNEL_VERSION"
+          echo "已从环境变量 patchverl 提取内核版本: $KERNEL_VERSION"
           exit 0
         fi
 
-        if [ -f "build_dir/target-*/linux-*/.kernelversion" ]; then
-          KERNEL_VERSION=$(cat build_dir/target-*/linux-*/.kernelversion | cut -d'.' -f1-2)
-          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-          echo "已从编译文件提取内核版本: $KERNEL_VERSION"
-          exit 0
+        # 兜底：若上述变量意外缺失，显示未知
+        else
+          echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
+          echo "未找到内核版本相关环境变量"
         fi
-
-        echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
-        echo "无法提取内核版本"
 
     - name: 计算编译时长
       if: always()  # 无论编译成功/失败都执行
