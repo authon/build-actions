@@ -52,8 +52,29 @@ jobs:
         remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
         remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
         
-    - name: 准备结束
-      uses: actions/checkout@v4
+    - name: Set up Go 1.26
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.26'
+
+    - name: Verify Go version
+      run: |
+        go version
+
+    - name: Clean Go module cache (prevent gvisor duplicate-file issues)
+      run: |
+        set -e
+        if command -v go >/dev/null 2>&1; then
+          go clean -modcache || true
+        fi
+        rm -rf /openwrt/dl/go-mod-cache || true
+
+    - name: Show Go cache paths
+      run: |
+        if command -v go >/dev/null 2>&1; then
+          echo "GOMODCACHE=$(go env GOMODCACHE)"
+          echo "GOCACHE=$(go env GOCACHE)"
+        fi
 
     - name: 检测密匙/文件/版本
       uses: 281677160/common@mishi
