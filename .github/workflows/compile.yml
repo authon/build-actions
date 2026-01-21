@@ -1,6 +1,7 @@
-# 
+#
 # 编译主程序,请勿修改文件名称（compile.yml）
 #
+
 
 name: 编译主程序
 on:
@@ -51,32 +52,6 @@ jobs:
         remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
         remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
         
-    - name: 准备结束
-      uses: actions/checkout@v4
-
-    - name: Set up Go 1.26
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.26'
-
-    - name: Verify Go version
-      run: |
-        go version
-
-    - name: Clean Go module cache (prevent gvisor duplicate-file issues)
-      run: |
-        set -e
-        if command -v go >/dev/null 2>&1; then
-          go clean -modcache || true
-        fi
-        rm -rf /openwrt/dl/go-mod-cache || true
-
-    - name: Show Go cache paths
-      run: |
-        if command -v go >/dev/null 2>&1; then
-          echo "GOMODCACHE=$(go env GOMODCACHE)"
-          echo "GOCACHE=$(go env GOCACHE)"
-        fi
     - name: 准备结束
       uses: actions/checkout@v4
 
@@ -161,13 +136,19 @@ jobs:
           KERNEL_VERSION="${{ env.LINUX_KERNEL }}"
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
           echo "已从环境变量 LINUX_KERNEL 提取内核版本: $KERNEL_VERSION"
+          exit 0
+        fi
+
+        # 备选：使用 patchverl 变量（日志中该值也为 6.12）
         elif [ -n "${{ env.patchverl }}" ]; then
-          # 备选：使用 patchverl 变量（日志中该值也为 6.12）
           KERNEL_VERSION="${{ env.patchverl }}"
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
           echo "已从环境变量 patchverl 提取内核版本: $KERNEL_VERSION"
+          exit 0
+        fi
+
+        # 兜底：若上述变量意外缺失，显示未知
         else
-          # 兜底：若上述变量意外缺失，显示未知
           echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
           echo "未找到内核版本相关环境变量"
         fi
