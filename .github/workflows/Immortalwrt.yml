@@ -73,12 +73,10 @@ on:
         default: 'true'
         type: boolean
 
-
-# 如若启动定时编译的话,配置文件是设置对应文件夹内的settings.ini文件
-# 定时触发开启开始编译(把下面两个#去掉开启,时间设置请看定时开启编译说明)
-# 定时触发开启开始编译(把下面两个#去掉开启,时间设置请看定时开启编译说明)
+  # 定时编译（如需开启，删除前面的#即可）
   schedule:
      - cron: 0 19 1,4,5,7,9,11,14,15,17,19,21,24,25,27,29,31 * *
+
 env:
   GIT_REPOSITORY: ${{github.repository}}
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
@@ -91,7 +89,8 @@ jobs:
   build:
     name: 启动"${{ matrix.target }}-${{ github.event.inputs.REPO_BRANCH }}"触发编译
     runs-on: ubuntu-22.04
-    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
+    # 修复核心语法错误：整个条件表达式包裹在${{ }}内
+    if: ${{ github.event.repository.owner.id == github.event.sender.id }}
     
     env:
       FOLDER_NAME: ${{ matrix.target }}
@@ -100,9 +99,13 @@ jobs:
       matrix:
         target: [Immortalwrt]
         
-        # 请勿对 target: [Immortalwrt] 做任何修改
-        
     steps:
+    # 新增：记录编译开始时间（全局TZ，与Lede保持一致）
+    - name: 记录编译开始时间
+      run: |
+        echo "COMPILE_START=$(date +%s)" >> $GITHUB_ENV
+        echo "START_TIME_DISPLAY=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
+      
     - name: 准备结束
       uses: actions/checkout@v4
       
@@ -158,5 +161,76 @@ jobs:
         gh_token: ${{ secrets.REPO_TOKEN }}
         
     - name: 触发启动"${{ matrix.target }}"开始编译
+      id: compile  # 新增ID：用于后续通知条件判断
       if: steps.info.outcome == 'success'
       uses: 281677160/common@trigger
+
+    # 新增：提取内核版本（兼容LINUX_KERNEL/patchverl，兜底未知）
+    - name: 提取内核版本
+      if: always()
+      run: |
+        if [ -n "${{ env.LINUX_KERNEL }}" ]; then
+          KERNEL_VERSION="${{ env.LINUX_KERNEL }}"
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+          echo "已从环境变量 LINUX_KERNEL 提取内核版本: $KERNEL_VERSION"
+        elif [ -n "${{ env.patchverl }}" ]; then
+          KERNEL_VERSION="${{ env.patchverl }}"
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+          echo "已从环境变量 patchverl 提取内核版本: $KERNEL_VERSION"
+        else
+          echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
+          echo "未找到内核版本相关环境变量"
+        fi
+
+    # 新增：计算编译时长（支持跨天，与Lede逻辑一致）
+    - name: 计算编译时长
+      if: always()
+      run: |
+        local_start=$COMPILE_START
+        local_end=$(date +%s)
+        
+        if [ $local_end -ge $local_start ]; then
+          duration=$((local_end - local_start))
+        else
+          duration=$(( (86400 - local_start) + local_end ))
+        fi
+    
+        hours=$((duration / 3600))
+        minutes=$(( (duration % 3600) / 60 ))
+        seconds=$((duration % 60))
+        echo "DURATION=${hours}小时${minutes}分钟${seconds}秒" >> $GITHUB_ENV
+        echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
+
+    # 新增：编译成功微信通知（基于Serverchan，与Lede格式一致）
+    - name: 编译成功触发通知
+      if: success() && steps.compile.outcome == 'success'
+      uses: emon100/Action-Serverchan@v3
+      with:
+        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        text: 编译触发【${{matrix.target}}】
+        desp: |
+          🎉 主人💕：【${{matrix.target}}】文件夹成功触发编译！
+          📦 编译目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件,请耐心等待......
+          🧮 内核版本：${{ env.KERNEL_VERSION }}
+          ⏱️ 定制编译时长：${{ env.DURATION }}
+          🕒 开始时间：${{ env.START_TIME_DISPLAY }}
+          🎈 完成时间：${{ env.FINISH_TIME }}
+          🌴 编译已成功触发 🎈！！！
+
+    # 新增：编译失败微信通知（带错误详情链接）
+    - name: 编译触发失败通知
+      if: failure() && steps.compile.outcome == 'failure'
+      uses: emon100/Action-Serverchan@v3
+      with:
+        SCKEY: ${{ secrets.WEIXIN_SCKEY }}
+        text: 编译失败【${{matrix.target}}】
+        desp: |
+          🚨 主人💕：【${{matrix.target}}】文件夹触发编译失败！
+          ❌ 失败目标：【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件
+          🧮 内核版本：${{ env.KERNEL_VERSION }}
+          😋 仓库信息：【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
+          ⏱️ 失败时已耗时：${{ env.DURATION }}
+          🕒 开始时间：${{ env.START_TIME_DISPLAY }}
+          🎈 失败时间：${{ env.FINISH_TIME }}
+          🔗 查看详情：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          🌴 请及时排查问题 🚨！！！
