@@ -79,10 +79,7 @@ on:
         default: 'true'
         type: boolean
 
-
-# 如若启动定时编译的话,配置文件是设置对应文件夹内的settings.ini文件
-# 定时触发开启开始编译(把下面两个#去掉开启,时间设置请看定时开启编译说明)
-# 定时触发开启开始编译(把下面两个#去掉开启,时间设置请看定时开启编译说明)
+  # 定时编译（如需开启，删除前面的#即可）
   schedule:
      - cron: 0 19 1,4,5,7,9,11,14,15,17,19,21,24,25,27,29,31 * *
 
@@ -98,7 +95,8 @@ jobs:
   build:
     name: 启动"${{ matrix.target }}-${{ github.event.inputs.REPO_BRANCH }}"触发编译
     runs-on: ubuntu-22.04
-    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
+    # 修复错误1：条件表达式完整包裹在${{ }}内
+    if: ${{ github.event.repository.owner.id == github.event.sender.id }}
     
     env:
       FOLDER_NAME: ${{ matrix.target }}
@@ -107,10 +105,7 @@ jobs:
       matrix:
         target: [Lede]
         
-        # 请勿对 target: [Lede] 做任何修改
-        
     steps:
-          # 1. 记录编译开始时间（直接使用全局 TZ）
     - name: 记录编译开始时间
       run: |
         echo "COMPILE_START=$(date +%s)" >> $GITHUB_ENV
@@ -171,47 +166,38 @@ jobs:
         gh_token: ${{ secrets.REPO_TOKEN }}
         
     - name: 触发启动"${{ matrix.target }}"开始编译
-      id: compile  # 添加这一行，定义compile步骤ID
+      id: compile
       if: steps.info.outcome == 'success'
       uses: 281677160/common@trigger
 
-    - name: 提取内核版本（直接使用现成环境变量）
+    - name: 提取内核版本（修复错误2：Shell语法+补充fi）
       if: always()
       run: |
-        # 优先使用明确的 LINUX_KERNEL 变量（日志中已显示该值为 6.12）
+        # 优先使用明确的 LINUX_KERNEL 变量
         if [ -n "${{ env.LINUX_KERNEL }}" ]; then
           KERNEL_VERSION="${{ env.LINUX_KERNEL }}"
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
           echo "已从环境变量 LINUX_KERNEL 提取内核版本: $KERNEL_VERSION"
-          exit 0
-        fi
-
-        # 备选：使用 patchverl 变量（日志中该值也为 6.12）
+        # 备选：使用 patchverl 变量
         elif [ -n "${{ env.patchverl }}" ]; then
           KERNEL_VERSION="${{ env.patchverl }}"
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
           echo "已从环境变量 patchverl 提取内核版本: $KERNEL_VERSION"
-          exit 0
-        fi
-
-        # 兜底：若上述变量意外缺失，显示未知
+        # 兜底：若上述变量意外缺失
         else
           echo "KERNEL_VERSION=未知" >> $GITHUB_ENV
           echo "未找到内核版本相关环境变量"
         fi
 
     - name: 计算编译时长
-      if: always()  # 无论编译成功/失败都执行
+      if: always()
       run: |
-        # 读取开始时间戳（从环境变量读入 Shell 变量）
         local_start=$COMPILE_START
-        # 直接获取当前结束时间戳（Shell 命令）
         local_end=$(date +%s)
         
         if [ $local_end -ge $local_start ]; then
           duration=$((local_end - local_start))
         else
-          # 跨天场景处理（如 23:50 开始 → 00:10 结束）
           duration=$(( (86400 - local_start) + local_end ))
         fi
     
@@ -219,26 +205,8 @@ jobs:
         minutes=$(( (duration % 3600) / 60 ))
         seconds=$((duration % 60))
         echo "DURATION=${hours}小时${minutes}分钟${seconds}秒" >> $GITHUB_ENV
-
         echo "FINISH_TIME=$(date +'%Y年%m月%d号%H时%M分')" >> $GITHUB_ENV
         
-    #- name: 触发编译通知
-      #uses: emon100/Action-Serverchan@v3
-      #with:
-        #SCKEY: ${{ secrets.WEIXIN_SCKEY }}
-        ## key: ${{ secrets.WEIXIN_SCKEY }}
-        #text: 开始编译【${{matrix.target}}】
-        #desp: 🎉 主人💕：您的编译脚本成功触发【${{matrix.target}}】文件夹编译【${{ env.SOURCE_CODE }}】【${{ env.FOLDER_NAME }}】【${{ env.CONFIG_FILE }}】分支的${{env.TARGET_PROFILE}}固件中,请耐心等待......
-
-          #😋【${{env.WAREHOUSE_MAN}}】仓库的【${{env.RUN_NUMBER}}号】
-
-          #🎈 完成时间：${{ env.FINISH_TIME }}
-
-          #🌴 固件编译已触发 🎈！！！
-  #🎈 完成时间：${{ env.FINISH_TIME }}
-  #🎈 触发时间：${{ format('{0:yyyy年MM月dd号HH时mm分}', github.event.head_commit.timestamp) }}
-
-      # 4. 成功通知（使用精确计算的时长）
     - name: 编译成功触发通知
       if: success() && steps.compile.outcome == 'success'
       uses: emon100/Action-Serverchan@v3
@@ -254,7 +222,6 @@ jobs:
           🎈 完成时间：${{ env.FINISH_TIME }}
           🌴 编译已成功触发 🎈！！！
 
-    # 5. 失败通知（同样使用精确时长）
     - name: 编译触发失败通知
       if: failure() && steps.compile.outcome == 'failure'
       uses: emon100/Action-Serverchan@v3
