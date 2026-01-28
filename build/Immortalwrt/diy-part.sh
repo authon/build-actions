@@ -4,8 +4,62 @@
 # 自行拉取插件之前请SSH连接进入固件配置里面确认过没有你要的插件再单独拉取你需要的插件
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
-echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall;main' >> feeds.conf.default
-echo 'src-git xiaorouji https://github.com/xiaorouji/openwrt-passwall-packages;main' >> feeds.conf.default
+# ======================== 第一步：兼容复合 Action 的环境变量 ========================
+# 确保核心变量存在（复合 Action 中传递的 HOME_PATH/COMMON_SH 等）
+if [ -z "${HOME_PATH}" ]; then
+    HOME_PATH=$(pwd)
+    echo "WARN: HOME_PATH 未定义，使用当前目录: ${HOME_PATH}"
+fi
+if [ -z "${CLEAR_PATH}" ]; then
+    CLEAR_PATH="/tmp/Clear"
+    mkdir -p "${CLEAR_PATH}"
+fi
+if [ -z "${DELETE}" ]; then
+    DELETE="${HOME_PATH}/package/base-files/files/etc/deletefile"
+    mkdir -p "$(dirname "${DELETE}")"
+fi
+
+# ======================== 第二步：正确添加插件库（核心，适配复合 Action 执行时机） ========================
+# 仅在 Diy_menu2 阶段执行插件库添加（避免重复执行）
+if [[ "${0##*/}" == "Diy_menu2" || "${BASH_SOURCE[0]}" =~ "Diy_menu2" ]]; then
+    echo -e "\033[32m===== 开始添加插件库（Diy_menu2 阶段）=====\033[0m"
+    
+    # 1. 定义 Feeds 配置文件路径
+    FEEDS_FILE="${HOME_PATH}/feeds.conf.default"
+    
+    # 2. 确保 Feeds 文件存在（复合 Action 下载源码后可能未创建）
+    if [ ! -f "${FEEDS_FILE}" ]; then
+        touch "${FEEDS_FILE}"
+        echo "✅ 已创建 Feeds 配置文件: ${FEEDS_FILE}"
+    fi
+
+    # 3. 先删除原有插件库配置（避免重复添加冲突）
+    # 可根据需要添加更多插件库的去重规则
+    sed -i '/passwall/d' "${FEEDS_FILE}"
+    sed -i '/openclash/d' "${FEEDS_FILE}"
+
+    # 4. 正确添加插件库（用 echo 包裹，避免 command not found）
+    # ---- 示例1：添加 passwall 插件库（核心需求）----
+    echo "src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> "${FEEDS_FILE}"
+    echo "src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main" >> "${FEEDS_FILE}"
+    # 如需 passwall2，取消下面注释
+    # echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "${FEEDS_FILE}"
+
+    # ---- 示例2：添加 OpenClash 插件库（可选）----
+    # echo "src-git openclash https://github.com/vernesong/OpenClash.git;dev" >> "${FEEDS_FILE}"
+
+    echo "✅ 插件库已添加到 Feeds 配置: ${FEEDS_FILE}"
+
+    # 5. 更新 Feeds 确保插件库生效（复合 Action 中 Diy_menu2 阶段执行）
+    cd "${HOME_PATH}" || exit 0
+    ./scripts/feeds update -a
+    ./scripts/feeds install -a -f -p passwall
+    ./scripts/feeds install -a -f -p passwall_packages
+    # 如需 OpenClash，添加下面一行
+    # ./scripts/feeds install -a -f -p openclash
+
+    echo -e "\033[32m===== 插件库添加完成 =====\033[0m"
+fi
 
 
 # 后台IP设置
