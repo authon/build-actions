@@ -4,30 +4,10 @@
 # 自行拉取插件之前请SSH连接进入固件配置里面确认过没有你要的插件再单独拉取你需要的插件
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
-# 开启调试模式：显示所有执行的命令，出错时立即退出并打印行号
-set -euxo pipefail
-# 输出当前环境变量（便于排查路径/变量问题）
-echo "===== 当前环境变量 ====="
-env | grep -E "HOME_PATH|CLEAR_PATH|DELETE"
-echo "===== 当前工作目录 ====="
-pwd
-ls -l "${HOME_PATH}/feeds.conf.default" || echo "feeds.conf.default 不存在"
-echo "========================"
-
-# ======================== 核心修复：正确添加passwall插件库 ========================
-# 先检查feeds.conf.default是否存在，避免路径错误
-if [ -f "${HOME_PATH}/feeds.conf.default" ]; then
-    # 先删除原有passwall相关条目（避免重复添加冲突）
-    sed -i '/passwall/d' "${HOME_PATH}/feeds.conf.default"
-    # 只添加核心passwall库（passwall2按需添加，避免冲突）
-    echo "src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> "${HOME_PATH}/feeds.conf.default"
-    echo "src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main" >> "${HOME_PATH}/feeds.conf.default"
-    # 如需passwall2，取消下面注释（建议只选其一）
-    # echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "${HOME_PATH}/feeds.conf.default"
-else
-    echo "ERROR: feeds.conf.default文件不存在！路径：${HOME_PATH}/feeds.conf.default"
-    exit 0  # 避免脚本直接退出，仅提示
-fi
+src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main >> "${HOME_PATH}/feeds.conf.default"
+src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main >> "${HOME_PATH}/feeds.conf.default"
+# 如需passwall2，取消下面注释（建议只选其一）
+# echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "${HOME_PATH}/feeds.conf.default"
 
 
 # 后台IP设置
