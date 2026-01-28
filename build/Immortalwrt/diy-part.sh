@@ -4,6 +4,16 @@
 # 自行拉取插件之前请SSH连接进入固件配置里面确认过没有你要的插件再单独拉取你需要的插件
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
+# 开启调试模式：显示所有执行的命令，出错时立即退出并打印行号
+set -euxo pipefail
+# 输出当前环境变量（便于排查路径/变量问题）
+echo "===== 当前环境变量 ====="
+env | grep -E "HOME_PATH|CLEAR_PATH|DELETE"
+echo "===== 当前工作目录 ====="
+pwd
+ls -l "${HOME_PATH}/feeds.conf.default" || echo "feeds.conf.default 不存在"
+echo "========================"
+
 # ======================== 核心修复：正确添加passwall插件库 ========================
 # 先检查feeds.conf.default是否存在，避免路径错误
 if [ -f "${HOME_PATH}/feeds.conf.default" ]; then
