@@ -4,21 +4,6 @@
 # 自行拉取插件之前请SSH连接进入固件配置里面确认过没有你要的插件再单独拉取你需要的插件
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
-# 先删除原有passwall配置，避免重复
-sed -i '/passwall/d' "${HOME_PATH}/feeds.conf.default"
-# 确保feeds.conf.default文件存在
-if [ ! -f "${HOME_PATH}/feeds.conf.default" ]; then
-    touch "${HOME_PATH}/feeds.conf.default"
-    echo "WARN: feeds.conf.default不存在，已自动创建！"
-fi
-
-echo "src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> "${HOME_PATH}/feeds.conf.default"
-echo "src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main" >> "${HOME_PATH}/feeds.conf.default"
-
-# 如需passwall2，取消下面注释（建议只选其一）
-# echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "${HOME_PATH}/feeds.conf.default"
-
-
 
 # 后台IP设置
 export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
