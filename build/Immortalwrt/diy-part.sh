@@ -4,63 +4,71 @@
 # 自行拉取插件之前请SSH连接进入固件配置里面确认过没有你要的插件再单独拉取你需要的插件
 # 不要一下就拉取别人一个插件包N多插件的，多了没用，增加编译错误，自己需要的才好
 
-# ======================== 第一步：兼容复合 Action 的环境变量 ========================
-# 确保核心变量存在（复合 Action 中传递的 HOME_PATH/COMMON_SH 等）
-if [ -z "${HOME_PATH}" ]; then
-    HOME_PATH=$(pwd)
-    echo "WARN: HOME_PATH 未定义，使用当前目录: ${HOME_PATH}"
-fi
-if [ -z "${CLEAR_PATH}" ]; then
-    CLEAR_PATH="/tmp/Clear"
-    mkdir -p "${CLEAR_PATH}"
-fi
-if [ -z "${DELETE}" ]; then
-    DELETE="${HOME_PATH}/package/base-files/files/etc/deletefile"
-    mkdir -p "$(dirname "${DELETE}")"
-fi
+# 终极版：整合方法1+方法2，解决passwall依赖冲突+强制加载
+if [ -z "${HOME_PATH}" ]; then HOME_PATH=$(pwd); fi
+CLEAR_PATH="${CLEAR_PATH:-/tmp/Clear}"
+DELETE="${DELETE:-${HOME_PATH}/package/base-files/files/etc/deletefile}"
+mkdir -p "$(dirname "${DELETE}")" "${CLEAR_PATH}"
 
-# ======================== 第二步：正确添加插件库（核心，适配复合 Action 执行时机） ========================
-# 仅在 Diy_menu2 阶段执行插件库添加（避免重复执行）
-if [[ "${0##*/}" == "Diy_menu2" || "${BASH_SOURCE[0]}" =~ "Diy_menu2" ]]; then
-    echo -e "\033[32m===== 开始添加插件库（Diy_menu2 阶段）=====\033[0m"
-    
-    # 1. 定义 Feeds 配置文件路径
-    FEEDS_FILE="${HOME_PATH}/feeds.conf.default"
-    
-    # 2. 确保 Feeds 文件存在（复合 Action 下载源码后可能未创建）
-    if [ ! -f "${FEEDS_FILE}" ]; then
-        touch "${FEEDS_FILE}"
-        echo "✅ 已创建 Feeds 配置文件: ${FEEDS_FILE}"
-    fi
+# ======================== 方法1：优先写入Feeds（顶部插入，避免被覆盖）========================
+echo -e "\033[32m===== 方法1：写入passwall Feeds到顶部 =====\033[0m"
+FEEDS_FILE="${HOME_PATH}/feeds.conf.default"
+touch "${FEEDS_FILE}"
 
-    # 3. 先删除原有插件库配置（避免重复添加冲突）
-    # 可根据需要添加更多插件库的去重规则
-    sed -i '/passwall/d' "${FEEDS_FILE}"
-    sed -i '/openclash/d' "${FEEDS_FILE}"
+# 1. 先删除原有passwall配置（避免重复）
+sed -i '/passwall/d' "${FEEDS_FILE}"
 
-    # 4. 正确添加插件库（用 echo 包裹，避免 command not found）
-    # ---- 示例1：添加 passwall 插件库（核心需求）----
-    echo "src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> "${FEEDS_FILE}"
-    echo "src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main" >> "${FEEDS_FILE}"
-    # 如需 passwall2，取消下面注释
-    # echo "src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main" >> "${FEEDS_FILE}"
+# 2. 在Feeds文件顶部插入passwall配置（核心：用sed在第一行插入，优先级最高）
+sed -i '1i src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main' "${FEEDS_FILE}"
+sed -i '2i src-git passwall_luci https://github.com/Openwrt-Passwall/openwrt-passwall.git;main' "${FEEDS_FILE}"
 
-    # ---- 示例2：添加 OpenClash 插件库（可选）----
-    # echo "src-git openclash https://github.com/vernesong/OpenClash.git;dev" >> "${FEEDS_FILE}"
+# ======================== 方法2：删除冲突依赖+克隆最新版本 ========================
+echo -e "\033[32m===== 方法2：清理冲突依赖+克隆最新passwall =====\033[0m"
+cd "${HOME_PATH}" || exit 0
 
-    echo "✅ 插件库已添加到 Feeds 配置: ${FEEDS_FILE}"
+# 1. 先执行Feeds更新（方法1的前置）
+./scripts/feeds update -a
 
-    # 5. 更新 Feeds 确保插件库生效（复合 Action 中 Diy_menu2 阶段执行）
-    cd "${HOME_PATH}" || exit 0
-    ./scripts/feeds update -a
-    ./scripts/feeds install -a -f -p passwall
-    ./scripts/feeds install -a -f -p passwall_packages
-    # 如需 OpenClash，添加下面一行
-    # ./scripts/feeds install -a -f -p openclash
+# 2. 执行Feeds安装（方法2的前置）
+./scripts/feeds install -a
 
-    echo -e "\033[32m===== 插件库添加完成 =====\033[0m"
-fi
+# 3. 删除Immortalwrt自带的冲突核心库（关键：解决版本冲突）
+rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-libev,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan-plus,tuic-client,v2ray-plugin,xray-plugin,geoview,shadow-tls} 2>/dev/null
+echo "✅ 已删除自带冲突核心库"
 
+# 4. 删除过时的luci-app-passwall（避免版本覆盖）
+rm -rf feeds/luci/applications/luci-app-passwall 2>/dev/null
+echo "✅ 已删除过时的luci-app-passwall"
+
+# 5. 克隆最新版本到本地（双重保障）
+rm -rf package/passwall-packages package/passwall-luci
+git clone --depth=1 https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/passwall-packages
+git clone --depth=1 https://github.com/Openwrt-Passwall/openwrt-passwall package/passwall-luci
+echo "✅ 已克隆最新passwall源码到本地目录"
+
+# ======================== 重新更新+安装Feeds（确保生效）========================
+echo -e "\033[32m===== 重新更新+安装passwall Feeds =====\033[0m"
+./scripts/feeds update passwall_packages passwall_luci
+./scripts/feeds install -a -f -p passwall_packages
+./scripts/feeds install -a -f -p passwall_luci
+./scripts/feeds install luci-app-passwall -p passwall_luci
+
+# ======================== 强制写入编译配置（无需手动勾选）========================
+echo -e "\033[32m===== 强制勾选passwall到.config =====\033[0m"
+CONFIG_FILE="${HOME_PATH}/.config"
+touch "${CONFIG_FILE}"
+
+# 删除原有冲突配置
+sed -i '/passwall/d' "${CONFIG_FILE}"
+sed -i '/xray/d' "${CONFIG_FILE}"
+
+# 强制勾选核心插件+依赖
+echo "CONFIG_PACKAGE_luci-app-passwall=y" >> "${CONFIG_FILE}"
+echo "CONFIG_PACKAGE_xray-core=y" >> "${CONFIG_FILE}"
+echo "CONFIG_PACKAGE_v2ray-geodata=y" >> "${CONFIG_FILE}"
+echo "CONFIG_PACKAGE_sing-box=y" >> "${CONFIG_FILE}"
+echo "CONFIG_PACKAGE_ipset=y" >> "${CONFIG_FILE}"
+echo "CONFIG_PACKAGE_iptables-mod-tproxy=y" >> "${CONFIG_FILE}"
 
 # 后台IP设置
 export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
