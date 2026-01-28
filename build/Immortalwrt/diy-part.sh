@@ -54,21 +54,21 @@ echo -e "\033[32m===== 重新更新+安装passwall Feeds =====\033[0m"
 ./scripts/feeds install luci-app-passwall -p passwall_luci
 
 # ======================== 强制写入编译配置（无需手动勾选）========================
-echo -e "\033[32m===== 强制勾选passwall到.config =====\033[0m"
-CONFIG_FILE="${HOME_PATH}/.config"
-touch "${CONFIG_FILE}"
+#echo -e "\033[32m===== 强制勾选passwall到.config =====\033[0m"
+#CONFIG_FILE="${HOME_PATH}/.config"
+#touch "${CONFIG_FILE}"
 
 # 删除原有冲突配置
-sed -i '/passwall/d' "${CONFIG_FILE}"
-sed -i '/xray/d' "${CONFIG_FILE}"
+#sed -i '/passwall/d' "${CONFIG_FILE}"
+#sed -i '/xray/d' "${CONFIG_FILE}"
 
 # 强制勾选核心插件+依赖
-echo "CONFIG_PACKAGE_luci-app-passwall=y" >> "${CONFIG_FILE}"
-echo "CONFIG_PACKAGE_xray-core=y" >> "${CONFIG_FILE}"
-echo "CONFIG_PACKAGE_v2ray-geodata=y" >> "${CONFIG_FILE}"
-echo "CONFIG_PACKAGE_sing-box=y" >> "${CONFIG_FILE}"
-echo "CONFIG_PACKAGE_ipset=y" >> "${CONFIG_FILE}"
-echo "CONFIG_PACKAGE_iptables-mod-tproxy=y" >> "${CONFIG_FILE}"
+#echo "CONFIG_PACKAGE_luci-app-passwall=y" >> "${CONFIG_FILE}"
+#echo "CONFIG_PACKAGE_xray-core=y" >> "${CONFIG_FILE}"
+#echo "CONFIG_PACKAGE_v2ray-geodata=y" >> "${CONFIG_FILE}"
+#echo "CONFIG_PACKAGE_sing-box=y" >> "${CONFIG_FILE}"
+#echo "CONFIG_PACKAGE_ipset=y" >> "${CONFIG_FILE}"
+#echo "CONFIG_PACKAGE_iptables-mod-tproxy=y" >> "${CONFIG_FILE}"
 
 # 后台IP设置
 export Ipv4_ipaddr="10.10.10.1"            # 修改openwrt后台地址(填0为关闭)
