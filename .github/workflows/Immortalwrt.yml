@@ -91,7 +91,7 @@ jobs:
     name: 启动"${{ matrix.target }}-${{ github.event.inputs.REPO_BRANCH }}"触发编译
     runs-on: ubuntu-22.04
     # 修复核心语法错误：整个条件表达式包裹在${{ }}内
-    if: ${{ github.event.repository.owner.id == github.event.sender.id }}
+    # if: ${{ github.event.repository.owner.id == github.event.sender.id }}
     
     env:
       FOLDER_NAME: ${{ matrix.target }}
