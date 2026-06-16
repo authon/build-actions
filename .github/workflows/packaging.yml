@@ -236,7 +236,7 @@ jobs:
         remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
     
     - name: 准备结束
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: 密匙检测
       uses: 281677160/common@yaoshi
