@@ -18,6 +18,7 @@ env:
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
   TZ: Asia/Shanghai
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -53,7 +54,7 @@ jobs:
         remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
         
     - name: 准备结束
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: 检测密匙/文件/版本
       uses: 281677160/common@mishi
