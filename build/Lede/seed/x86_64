@@ -54,6 +54,7 @@ CONFIG_PACKAGE_kmod-sched-core=y
 CONFIG_PACKAGE_kmod-sit=y
 # CONFIG_PACKAGE_kmod-tcp-bbr is not set
 CONFIG_PACKAGE_ksmbd-server=y
+CONFIG_PACKAGE_libatomic=y
 CONFIG_PACKAGE_libcap-ng=m
 CONFIG_PACKAGE_libevent2=y
 CONFIG_PACKAGE_libgmp=y
