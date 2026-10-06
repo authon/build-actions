@@ -80,8 +80,8 @@ on:
         type: boolean
 
   # 定时编译（如需开启，删除前面的#即可）
-  schedule:
-     - cron: 0 19 1,4,5,7,9,11,14,15,17,19,21,24,25,27,29,31 * *
+#  schedule:
+#     - cron: 0 19 1,4,5,7,9,11,14,15,17,19,21,24,25,27,29,31 * *
 
 env:
   GIT_REPOSITORY: ${{github.repository}}
